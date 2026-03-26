@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raw Pressery | Alphanso Mango</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-delayed {
+            animation: float 8s ease-in-out infinite;
+            animation-delay: 2s;
+        }
+
+        body {
+            /* Fallback background */
+            background: linear-gradient(to bottom, #f97316, #ea580c);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* 
+           Removed the custom scrollbar CSS!
+           Now your default browser scrollbar is thick, highly visible,
+           and extremely easy to grab and scroll!
+        */
+
+        #bottle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            /* No mix-blend-mode. The 3D render becomes the full native background of the page! */
+        }
+    </style>
+</head>
+
+<body class="text-white font-sans">
+
+    <!-- The 3D Rotation Canvas covering the FULL screen -->
+    <canvas id="bottle-canvas"></canvas>
+
+    <!-- Creates 500vh vertical space for a thick scrollbar -->
+    <div style="height: 500vh; position: relative;">
+
+        <!-- Sticky container keeps the text overlaid perfectly over the fullscreen animation -->
+        <div id="interactive-layer"
+            class="sticky top-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center text-center z-10 cursor-grab active:cursor-grabbing">
+
+            <nav
+                class="absolute top-0 w-full flex justify-between items-center p-8 uppercase tracking-widest text-sm z-50">
+                <div class="font-bold text-2xl drop-shadow-lg pointer-events-auto">RAW <span
+                        class="font-light">PRESSERY</span></div>
+                <div class="space-x-8 pointer-events-auto">
+                    <a href="#" class="hover:opacity-70 drop-shadow-md">Shop</a>
+                    <a href="#" class="hover:opacity-70 drop-shadow-md">Our Story</a>
+                    <a href="#"
+                        class="bg-white text-orange-600 px-6 py-2 rounded-full font-bold transition-transform hover:scale-105 inline-block shadow-lg">Cart</a>
+                </div>
+            </nav>
+
+            <div class="absolute top-32 left-10 w-32 opacity-80 parallax-layer pointer-events-none">
+                <div class="floating-delayed">
+                    <img src="https://path-to-your-mango-slice.png" alt="Mango Slice"
+                        onerror="this.src='https://cdn-icons-png.flaticon.com/512/2909/2909808.png'">
+                </div>
+            </div>
+
+            <div class="absolute bottom-20 right-20 w-40 opacity-80 parallax-layer pointer-events-none">
+                <div class="floating">
+                    <img src="https://path-to-your-leaf.png" alt="Leaf"
+                        onerror="this.src='https://cdn-icons-png.flaticon.com/512/892/892926.png'">
+                </div>
+            </div>
+
+            <!-- Loading state -->
+            <div id="loading"
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-2xl drop-shadow-md opacity-90 transition-opacity duration-300 pointer-events-none">
+                Loading 3D asset... (0%)
+            </div>
+
+            <!-- UI Text Elements (positioned absolute so they don't shift) -->
+            <div
+                class="absolute w-full h-full flex flex-col items-center justify-between pointer-events-none py-20 mt-10">
+
+                <h1
+                    class="text-[12vw] font-black italic tracking-tighter opacity-20 whitespace-nowrap parallax-layer drop-shadow-xl mt-12">
+                    ALPHANSO
+                </h1>
+
+                <!-- This block sits at the bottom overlaid on the canvas -->
+                <div class="parallax-layer pb-12">
+                    <h2 class="text-4xl font-bold uppercase drop-shadow-md">Alphanso Mango</h2>
+                    <p class="text-xl mt-2 opacity-90 drop-shadow-md">Pure. Cold-Pressed. Golden.</p>
+                    <div class="mt-4 flex items-center justify-center drop-shadow-md">
+                        <span class="text-3xl font-light line-through opacity-60">150 kr</span>
+                        <span class="text-5xl font-black ml-4">120 kr</span>
+                    </div>
+                    <button
+                        class="mt-8 bg-black text-white px-12 py-4 rounded-full text-lg font-bold hover:bg-white hover:text-black transition-all transform hover:-translate-y-1 shadow-2xl pointer-events-auto">
+                        ADD TO BASKET
+                    </button>
+                    <!-- Scroll indicator -->
+                    <div class="mt-8 animate-bounce opacity-80 flex flex-col items-center">
+                        <span class="text-sm uppercase tracking-widest block mb-2 font-bold drop-shadow-md">Grab
+                            Scrollbar or Drag Screen</span>
+                        <svg class="w-6 h-6 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Mouse Parallax Effect (Moves layered text/elements opposite to cursor)
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.015;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.015;
+            document.querySelectorAll('.parallax-layer').forEach(el => {
+                el.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            });
+        });
+
+        // 2. Fullscreen 3D Canvas Setup
+        const canvas = document.getElementById('bottle-canvas');
+        const context = canvas.getContext('2d');
+        const loadingStr = document.getElementById('loading');
+
+        const frameCount = 200;
+        const currentFrame = index => `images/ezgif-frame-${index.toString().padStart(3, '0')}.jpg`;
+
+        const images = [];
+        let loadedImages = 0;
+
+        // "object-fit: cover" logical algorithm for Canvas rendering
+        // ensures the animation fills 100% of ANY screen without black bars!
+        function drawImage(img) {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            const canvasRatio = canvas.width / canvas.height;
+            const imgRatio = img.width / img.height;
+
+            let drawWidth = canvas.width;
+            let drawHeight = canvas.height;
+            let offsetX = 0;
+            let offsetY = 0;
+
+            if (canvasRatio > imgRatio) {
+                // Screen is wider than image aspect ratio
+                drawHeight = canvas.width / imgRatio;
+                offsetY = (canvas.height - drawHeight) / 2;
+            } else {
+                // Screen is taller than image aspect ratio
+                drawWidth = canvas.height * imgRatio;
+                offsetX = (canvas.width - drawWidth) / 2;
+            }
+
+            context.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        }
+
+        // Preload frames
+        for (let i = 1; i <= frameCount; i++) {
+            const img = new Image();
+            img.onload = () => {
+                loadedImages++;
+                loadingStr.innerText = `Loading 3D asset... (${Math.round((loadedImages / frameCount) * 100)}%)`;
+
+                if (loadedImages === 1) {
+                    updateCanvasSize(); // Draw first frame
+                }
+
+                if (loadedImages === frameCount) {
+                    loadingStr.style.opacity = '0';
+                    setTimeout(() => loadingStr.style.display = 'none', 300);
+                }
+            };
+            img.src = currentFrame(i);
+            images.push(img);
+        }
+
+        // Keeps canvas perfectly matched to the window size at all times
+        const updateCanvasSize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const frameIndex = Math.max(0, Math.min(frameCount - 1, Math.round(currentFrameCount) - 1));
+            if (images[frameIndex] && images[frameIndex].complete) {
+                drawImage(images[frameIndex]);
+            }
+        };
+
+        window.addEventListener('resize', updateCanvasSize);
+
+        // 3. Scroll Logic (Maps the window scrollbar to the frame index)
+        let targetFrame = 1;
+        let currentFrameCount = 1;
+
+        function updateFromScroll() {
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const maxScrollTop = document.documentElement.scrollHeight - window.innerHeight;
+
+            if (maxScrollTop > 0) {
+                const scrollFraction = Math.max(0, Math.min(1, scrollTop / maxScrollTop));
+                targetFrame = Math.floor(scrollFraction * (frameCount - 1)) + 1;
+            }
+        }
+
+        window.addEventListener('scroll', updateFromScroll);
+
+        // 4. Manual Click and Drag Logic
+        const interactiveLayer = document.getElementById('interactive-layer');
+        let isDragging = false;
+        let startX = 0;
+        let frameAtStart = 1;
+
+        interactiveLayer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            frameAtStart = targetFrame;
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        interactiveLayer.addEventListener('mouseleave', () => {
+            isDragging = false;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.clientX - startX;
+                const frameShift = Math.floor(dx / 5);
+
+                let newTarget = frameAtStart + frameShift;
+                // Endless rotation
+                while (newTarget > frameCount) newTarget -= frameCount;
+                while (newTarget < 1) newTarget += frameCount;
+
+                targetFrame = newTarget;
+            }
+        });
+
+        // 5. Native Render Loop (Extremely smooth butter rotation easing)
+        function renderLoop() {
+            let diff = targetFrame - currentFrameCount;
+
+            if (Math.abs(diff) > frameCount / 2) {
+                if (diff > 0) currentFrameCount += frameCount;
+                else currentFrameCount -= frameCount;
+                diff = targetFrame - currentFrameCount;
+            }
+
+            currentFrameCount += diff * 0.1;
+
+            let frameIndex = Math.round(currentFrameCount) - 1;
+            while (frameIndex >= frameCount) frameIndex -= frameCount;
+            while (frameIndex < 0) frameIndex += frameCount;
+
+            if (images[frameIndex] && images[frameIndex].complete) {
+                drawImage(images[frameIndex]);
+            }
+
+            requestAnimationFrame(renderLoop);
+        }
+
+        requestAnimationFrame(renderLoop);
+    </script>
+</body>
+
+</html>
