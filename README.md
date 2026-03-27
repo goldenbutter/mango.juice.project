@@ -1,8 +1,6 @@
 # 🥭 Raw Pressery | Alphanso Mango
 
-<div align="center">
-  <video src="https://raw.githubusercontent.com/goldenbutter/mango.juice.project/main/Final_Output.mp4" width="100%" controls autoplay loop muted></video>
-</div>
+https://github.com/goldenbutter/mango.juice.project/raw/main/Final_Output.mp4
 
 A premium, highly interactive single-page landing website. This project seamlessly integrates a massive **200-frame 3D animation sequence** directly into the background of the page using HTML5 `<canvas>`. The 3D scene rotates dynamically as you scroll down the page or drag your mouse across the screen! 
 
