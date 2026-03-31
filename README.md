@@ -1,10 +1,14 @@
 # 🥭 Raw Pressery | Alphanso Mango
 
-<div align="center">
-  <img src="Final_Output.gif" alt="Mango Juice 3D Interactive Animation" width="100%">
-</div>
+
 
 A premium, highly interactive single-page landing website. This project seamlessly integrates a massive **200-frame 3D animation sequence** directly into the background of the page using HTML5 `<canvas>`. The 3D scene rotates dynamically as you scroll down the page or drag your mouse across the screen! 
+
+
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/c9223d33-bb37-42ed-a702-79210c13557e" width="100%" controls autoplay loop muted></video>
+</div>
+
 
 ## ✨ Features
 
