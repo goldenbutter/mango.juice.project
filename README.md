@@ -6,7 +6,7 @@ A premium, highly interactive single-page landing website. This project seamless
 
 
 <div align="center">
-  <video src="https://github.com/user-attachments/assets/c9223d33-bb37-42ed-a702-79210c13557e" width="100%" controls autoplay loop muted></video>
+  <image src="Final_Output.gif" width="100%" controls autoplay loop muted></image>
 </div>
 
 
